@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang chủ</title>
+    <head th:replace="common/libuser :: libheader"></head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <script src="js/price.js"></script>
+</head>
+<body>
+    <div th:replace="common/headerUser :: headerUser"></div>
+
+    <div class="contentmain">
+        <div class="container">
+            <div class="marque">
+                <marquee>Chuyên cung cấp hoa quả sạch, chất lượng cao, nguồn gốc rõ ràng</marquee>
+            </div>
+            <div class="row">
+                <div th:replace="common/categoryleft :: danhMucLeft"></div>
+                <div class="col-lg-80p col-md-9 col-sm-9">
+                    <div class="row">
+                        <div class="col-lg-5 col-md-5 col-sm-12 col-12">
+                            <img id="imgdetailpro" th:src="${sanPham.imageBanner}" class="imgdetailpro">
+                            <div class="listimgdetail row" id="listimgdetail">
+                                <div th:each="img : ${sanPham.productImages}" class="col-lg-20p col-md-3 col-sm-4 col-4 singdimg">
+                                    <img onclick="clickImgdetail(this)" th:src="${img.linkImage}" class="imgldetail ">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-7 col-md-7 col-sm-12 col-12">
+                            <span class="detailnamepro" id="detailnamepro" th:text="${sanPham.name}">name</span>
+                            <div class="blockdetailpro">
+                                <span class="codepro" id="codepro" th:text="${sanPham.code}">STM6099-DEN</span>
+                                <span class="quansale" id="quansale">Đã bán <span th:text="${sanPham.quantitySold}"></span></span>
+                            </div>
+                            <p class="pricedetail" id="pricedetail">[[${#numbers.formatDecimal(sanPham.price, 0, 'COMMA', 0, 'POINT')}]].đ</p>
+    
+                            <div class="addcartdetail">
+                                <button onclick="upAndDownDetail(-1)" class="cartbtn"> - </button>
+                                <input form="formaddcart" id="inputslcart" name="soLuong" min="1" class="inputslcart" value="1">
+                                <button onclick="upAndDownDetail(1)" class="cartbtn"> + </button></div>
+                            <div class="btndetail">
+                                <form id="formaddcart" action="add-cart" method="post">
+                                    <input type="hidden" name="id" th:value="${sanPham.id}">
+                                    <button id="btnaddcart" class="btnaddcart"><i class="fa fa-shopping-cart"></i> Thêm giỏ hàng</button>
+                                </form>
+                            </div>
+                        </div>
+    
+                        <div class="col-lg-12">
+                            <div class="blocktitle">Mô tả sản phẩm</div>
+                            <div id="descriptiondetail" class="descriptiondetail">
+                                <div th:utext="${sanPham.description}"></div>
+                            </div>
+                            <span onclick="readmore()" class="readmore">Đọc thêm mô tả</span>
+                        </div>
+
+                        <div class="col-lg-7 col-md-8 col-sm-12 col-12">
+                            <p class="titledes">Phản hổi</p>
+                            <div class="listcautlct" id="listcautlct">
+                                <div th:each="cmt : ${sanPham.productComments}" class="singlectlct">
+                                    <div class="row">
+                                        <div class="col-11">
+                                            <div class="d-flex nguoidangctl">
+                                                <img class="avtuserdangctl" src="image/avatar.webp">
+                                                <span class="usernamedangctl" th:text="${cmt.user.email}"></span>
+                                                <span class="ngaytraloi" th:text="${cmt.createdTime} + ', ' + ${cmt.createdDate}">16-07-2023</span>
+                                                <a th:if="${cmt.user.id == iduser}" th:href="@{delete-comment(id=${cmt.id})}">
+                                                    <i class="fa fa-trash pointer ngaytraloi"></i>
+                                                </a>
+                                            </div>
+                                            <div class="contentctlct" th:text="${cmt.content}"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <form action="add-comment" method="post" sec:authorize="isAuthenticated()" class="col-sm-12 col-12" id="mycomment">
+                                <label id="titlerep" class="lb-chon-danhmuc">Bình luận của bạn</label>
+                                <input type="hidden" name="id" th:value="${sanPham.id}">
+                                <textarea name="noiDung" class="form-control"></textarea><br>
+                                <button class="btn btn-primary form-control">Binh luận</button>
+                            </form>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="blocktitle">Sản phẩm liên quan</div>
+                            <div class="row" id="listproductlq">
+                                <div  th:each="sanPham : ${sanPhamLienQuan}" class="col-lg-20p col-md-4 col-sm-3 col-6 singleproduct">
+                                    <div class="zoom-img"><a th:href="@{detail(id=${sanPham.id})}" ><img class="imgproduct" th:src="${sanPham.imageBanner}"></a></div>
+                                    <a class="proname" th:href="@{detail(id=${sanPham.id})}"  th:text="${sanPham.name}">></a>
+                                    <span class="pricepro" >Giá: <span>[[${#numbers.formatDecimal(sanPham.price, 0, 'COMMA', 0, 'POINT')}]].đ</span></span>
+                                    <form sec:authorize="isAuthenticated()" action="add-cart" method="post">
+                                        <input type="hidden" name="id" th:value="${sanPham.id}">
+                                        <input type="hidden" name="soLuong" th:value="${1}">
+                                        <button class="btncartpro form-control"><i class="fa fa-shopping-bag"></i> Giỏ hàng</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="common/footeruser :: footerUser"></div>
+</div>
+</body>
+<script>
+    function upAndDownDetail(val) {
+        var quan = document.getElementById("inputslcart").value;
+        if (val < 0 && quan == 1) {
+            return;
+        }
+        document.getElementById("inputslcart").value = Number(quan) + Number(val)
+    }
+    var check = 1;
+    function readmore() {
+        if (check % 2 != 0) {
+            document.getElementById("descriptiondetail").style.height = 'auto'
+        } else {
+            document.getElementById("descriptiondetail").style.height = '200px'
+        }
+        check++;
+    }
+    async function clickImgdetail(e) {
+        var img = document.getElementsByClassName("imgldetail");
+        for (i = 0; i < img.length; i++) {
+            document.getElementsByClassName("imgldetail")[i].classList.remove('imgactive');
+        }
+        e.classList.add('imgactive')
+        document.getElementById("imgdetailpro").src = e.src
+    }
+</script>
+
+</html>

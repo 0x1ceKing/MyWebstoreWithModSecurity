@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Tài Khoản</title>
+  <head th:replace="common/libadmin :: libheaderadmin"></head>
+  <link rel="stylesheet" type="text/css" href="/css/styles.css">
+</head>
+
+<body class="sb-nav-fixed">
+<div th:replace="common/navbarAdmin :: headerAdmin"></div>
+<div id="layoutSidenav">
+  <div th:replace="common/navbarAdmin :: sidenavAdmin"></div>
+  <div id="layoutSidenav_content">
+    <main class="main">
+      <div class="main-component">
+        <div class="col-md-9 animated bounce">
+          <div class="thongke">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="thongke1">
+                  <div class="texts">Doanh thu tháng này (VND)</div>
+                  <div>
+                  </div>
+                  <div class="soluong">
+                    <b id="doanhThu">[[${#numbers.formatDecimal(doanhThuThangNay, 0, 'COMMA', 0, 'POINT')}]].đ</b>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="thongke2">
+                  <div class="texts">Số lượng quản trị</div>
+                  <div>
+                  </div>
+                  <div class="soluong">
+                    <b id="soLuongNV" th:text="${numberAdmin}"></b>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="thongke3">
+                  <div class="texts">Số lượng mặt hàng hiện có</div>
+                  <div>
+                  </div>
+                  <div class="soluong">
+                    <b id="soLuongMH" th:text="${numberProduct}"></b>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="thongke4">
+                  <div class="texts">Doanh thu trong ngày (VND)</div>
+                  <div>
+                  </div>
+                  <div class="soluong">
+                    <b id="doanhThuNgay">[[${#numbers.formatDecimal(revenueByDate, 0, 'COMMA', 0, 'POINT')}]].đ</b>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="thongke5">
+                  <div class="texts">Số đơn hàng hoàn thành trong ngày</div>
+                  <div>
+                  </div>
+                  <div class="soluong">
+                    <b id="donhoanthanh" th:text="${numInvoiceToDay}"></b>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
+      <br><h4>Sản phẩm bán chạy</h4>
+      <table id="example" class="table table-striped tablefix">
+        <thead class="thead-tablefix">
+        <tr>
+          <th>id</th>
+          <th>Ảnh</th>
+          <th>Mã</th>
+          <th>Danh mục</th>
+          <th>Tên</th>
+          <th>Giá</th>
+          <th>Ngày tạo</th>
+          <th>Số lượng còn</th>
+          <th>Số lượng bán</th>
+        </tr>
+        </thead>
+        <tbody id="listproduct">
+          <tr th:each="sanPham : ${sanPhamBanChayGlobal}">
+            <td th:text="${sanPham.id}"></td>
+            <td><img class="imgproduct" th:src="${sanPham.imageBanner}" style="width: 100px"></td>
+            <td th:text="${sanPham.code}"></td>
+            <td th:text="${sanPham.category.name}"></td>
+            <td th:text="${sanPham.name}"></td>
+            <td>[[${#numbers.formatDecimal(sanPham.price, 0, 'COMMA', 0, 'POINT')}]].đ</td>
+            <td th:text="${sanPham.createdDate}"></td>
+            <td th:text="${sanPham.quantity}"></td>
+            <td th:text="${sanPham.quantitySold}"></td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+</div>
+
+
+</body>
+<script>
+  $('#example').DataTable();
+</script>
+
+</html>

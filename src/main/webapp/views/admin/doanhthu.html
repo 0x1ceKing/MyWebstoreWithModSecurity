@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tài Khoản</title>
+    <head th:replace="common/libadmin :: libheaderadmin"></head>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+</head>
+
+<body class="sb-nav-fixed">
+<div th:replace="common/navbarAdmin :: headerAdmin"></div>
+<div id="layoutSidenav">
+    <div th:replace="common/navbarAdmin :: sidenavAdmin"></div>
+        <div id="layoutSidenav_content">
+            <main class="main">
+                <form class="col-sm-12 header-sp row ">
+                    <div class="col-md-3">
+                        <p class="loctheongay">Chọn năm cần xem</p>
+                        <select th:id="year" name="year" class="form-control">
+                        <option id="2023">2023</option>
+                        <option id="2024">2024</option>
+                        <option id="2025">2025</option>
+                        <option id="2026">2026</option>
+                        <option id="2027">2027</option>
+                        <option id="2028">2028</option>
+                      </select>
+                    </div>
+                    <div class="col-md-2"><br>
+                        <button class="btn btn-primary form-control" style="margin-top: 10px;"><i class="fa fa-filter"></i> Lọc</button>
+                    </div>
+                </form>
+                <div class="col-sm-12 divtale">
+                    <div class="card chart-container divtale">
+                        <canvas id="chart"></canvas>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+</body>
+<script th:inline="javascript">
+    var nam = document.getElementById("year").value
+    // Lấy dữ liệu từ Thymeleaf và chuyển sang JavaScript
+    const list = /*[[${dataPoints}]]*/ [];
+    var main = '';
+    for (i = 0; i < list.length; i++) {
+        if (list[i] == null) {
+            list[i] = 0
+        }
+    }
+
+
+    var lb = 'doanh thu năm ' + nam;
+    const ctx = document.getElementById("chart").getContext('2d');
+    const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ["tháng 1", "tháng 2", "tháng 3", "tháng 4",
+                "tháng 5", "tháng 6", "tháng 7", "tháng 8", "tháng 9", "tháng 10", "tháng 11", "tháng 12"
+            ],
+            datasets: [{
+                label: lb,
+                backgroundColor: 'rgba(161, 198, 247, 1)',
+                borderColor: 'rgb(47, 128, 237)',
+                data: list,
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        callback: function(value) {
+                            return value;
+                        }
+                    }
+                }]
+            }
+        },
+    });
+
+    const VND = new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+    });
+
+    function formatmoney(money) {
+        return VND.format(money);
+    }
+</script>
+</html>

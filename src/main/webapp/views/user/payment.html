@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang chủ</title>
+    <head th:replace="common/libuser :: libheader"></head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" type="text/css" media="all" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" type="text/javascript"></script>
+</head>
+<body>
+<div th:replace="common/headerUser :: headerUser"></div>
+
+<div class="contentmain">
+    <div class="container">
+        <div class="marque">
+            <marquee>Chuyên cung cấp giống cây ăn quả công nghệ cao , cây dược liệu , hoa và dịch vụ nông nghiệp.</marquee>
+        </div>
+        <div style="margin-top: 80px;">
+
+            <div id="thanhcong" th:if="${success} or ${warning}" style="text-align: center;margin-top: 15px; line-height: 25px;">
+                <h3 style="font-size: 25px; font-weight: bold;">Đặt hàng thành công</h3>
+                <p style="margin-top: 15px;">Cảm ơn bạn đã mua sản phẩm của chúng tôi.</p>
+                <p style="margin-top: 15px;">Hãy kiểm tra thông tin đặt hàng của bạn trong lịch sử đặt hàng</p>
+                <a href="taikhoan#invoice" class="btn btn-danger" style="margin-top: 15px;">Xem lịch sử đặt hàng</a>
+            </div>
+
+            <div id="thatbai" th:if="${error}" style="text-align: center;margin-top: 15px; display: none;">
+                <h3 style="font-size: 25px; font-weight: bold;">Thông báo</h3>
+                <p style="margin-top: 15px;" id="errormess">Bạn chưa hoàn thành thanh toán.</p>
+                <p style="margin-top: 15px;">Quay về <a href="index" style="color: red;">trang chủ</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="common/footeruser :: footerUser"></div>
+</div>
+</body>
+
+</html>

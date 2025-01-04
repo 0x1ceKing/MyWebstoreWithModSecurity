@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang chủ</title>
+    <head th:replace="common/libuser :: libheader"></head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <script src="js/price.js"></script>
+</head>
+<body>
+    <div th:replace="common/headerUser :: headerUser"></div>
+
+    <div class="contentmain">
+        <div class="container">
+            <div class="marque">
+                <marquee>Chuyên cung cấp hoa quả sạch, chất lượng cao, nguồn gốc rõ ràng</marquee>
+            </div>
+            <div class="row">
+                <div th:replace="common/categoryleft :: danhMucLeft"></div>
+                <div class="col-lg-80p col-md-9 col-sm-9">
+                    <div class="blocktitle" style="margin-top: 0px !important;">Hướng dẫn chăm sóc cây trồng</div>
+                    <form class="col-sm-6" style="margin-top: 20px">
+                        <input name="search" placeholder="Tìm kiếm" class="form-control">
+                    </form>
+                    <div id="listinstr">
+                        <div class="singlebg" th:each="b : ${blogList}">
+                            <a href="instruction-detail" class="titlebg" th:text="${b.title}">Dự đoán giá hoa ly tết năm 2019</a>
+                            <div class="inforblg">
+                                <span class="inforct"><i class="fa fa-user"></i></span>
+                                <span class="inforct"> Đăng bởi: Admin</span>
+                                <span class="iconblg inforct"><i class="fa fa-eye"></i></span>
+                                <span class="inforct"> <span th:text="${b.numView}"></span> Views</span>
+                                <span class="iconblg inforct"><i class="fa fa-calendar"></i></span>
+                                <span class="inforct" th:text="${b.createdDate}"></span>
+                            </div>
+                            <div class="row infbg">
+                                <div class="col-lg-3 col-md-4 col-sm-4 col-4">
+                                    <a th:href="@{chitietblog(id=${b.id})}"><img th:src="${b.imageBanner}" class="imgbgsingle"></a>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-8 col-8">
+                                    <div class="contentblgs" th:text="${b.description}">
+                                    </div>
+                                    <a class="btnreadmore" th:href="@{chitietblog(id=${b.id})}">Xem thêm</a>
+                                 </div>
+                            </div>
+                        </div>
+                       
+                    </div>
+                    <nav aria-label="Page navigation" class="navigationpage">
+                        <ul class="pagination justify-content-center">
+                            <!-- Nút Previous -->
+                            <li class="page-item" th:classappend="${pageable.pageNumber == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/blog(page=${pageable.pageNumber - 1}, size=${pageable.pageSize})}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+
+                            <!-- Các trang -->
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, tongSoTrang - 1)}"
+                                th:classappend="${i == pageable.pageNumber} ? 'active'">
+                                <a class="page-link" th:href="@{/blog(page=${i}, size=${pageable.pageSize})}" th:text="${i + 1}">1</a>
+                            </li>
+
+                            <!-- Nút Next -->
+                            <li class="page-item" th:classappend="${pageable.pageNumber >= tongSoTrang - 1} ? 'disabled'">
+                                <a class="page-link" th:href="@{/blog(page=${pageable.pageNumber + 1}, size=${pageable.pageSize})}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="common/footeruser :: footerUser"></div>
+    </div>
+</div>
+</body>
+
+</html>

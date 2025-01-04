@@ -1,0 +1,76 @@
+# Apache httpd-2.4.54-win64-VS16 - 81
+# MySQL mysql-8.0.30-winx64 - 3307
+version: '3.7'
+services:
+  mysql:
+    image: mysql:9.1
+    container_name: mysql_container
+    ports:
+    - "3309:3306"
+    environment:
+      - MYSQL_DATABASE=webstore 
+      - MYSQL_USER=th1nyunb0y 
+      - MYSQL_PASSWORD=Tl846255** 
+      - MYSQL_ROOT_PASSWORD=Tl846255** 
+      - MYSQL_HOST=mysql 
+    restart: always
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+      - ./webstore.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - webstore
+
+  web:
+    build: .
+    container_name: webstore_container
+    # ports:
+    #   - "8080:8080"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql_container:3306/webstore
+      SPRING_DATASOURCE_USERNAME: th1nyunb0y
+      SPRING_DATASOURCE_PASSWORD: Tl846255**
+    networks:
+      - webstore
+
+  nginx:
+    build: ./NginxProxy_ModSecurityWaf
+    container_name: proxy_container
+    ports:
+      - "8888:8888"
+      - "1000:1000"
+    depends_on:
+      - web
+      - phpmyadmin
+    volumes:
+      - "./NginxProxy_ModSecurityWaf/conf/conf.d/default.conf:/etc/nginx/conf.d/default.conf"
+      - "./NginxProxy_ModSecurityWaf/conf/modsec/:/etc/nginx/modsec/"
+    networks:
+      - webstore
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin_container
+    restart: always
+    depends_on:
+      - mysql
+    # ports:
+    #   - "1000:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    networks:
+      - webstore
+
+networks:
+  webstore:
+    name: webstore_network
+    driver: bridge
+volumes:
+  mysql-data:
+
+  
+#docker—compose —f ./docker-compose.yml up —d
+#docker—compose —f ./docker-compose.yml down
+# .\mvnw spring-boot:run -> Run web app using cmd

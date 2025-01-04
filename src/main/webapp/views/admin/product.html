@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý sản phẩm</title>
+    <head th:replace="common/libadmin :: libheaderadmin"></head>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+</head>
+
+<body class="sb-nav-fixed">
+<div th:replace="common/navbarAdmin :: headerAdmin"></div>
+<div id="layoutSidenav">
+    <div th:replace="common/navbarAdmin :: sidenavAdmin"></div>
+    <div id="layoutSidenav_content">
+        <main class="main">
+            <div class="col-sm-12 header-sp">
+                <form class="row" method="get" action="/admin/product">
+                    <div class="col-md-3 col-sm-12">
+                        <label class="lb-form">&ThinSpace;</label>
+                        <a href="/admin/addproduct" class="btn btn-primary form-control"><i class="fa fa-plus"></i> Thêm sản phẩm</a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-6">
+                        <label class="lb-form">Chọn danh mục</label>
+                        <select name="category" id="listcategory" class="form-control" style="width: 100%;">
+                            <option value="-1">--- Tất cả ---</option>
+                            <option
+                                    th:each="c : ${listCategory}"
+                                    th:text="${c.name}"
+                                    th:selected="${category == c.id}"
+                                    th:value="${c.id}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-6">
+                        <label class="lb-form" style="display: block;">&ThinSpace;</label>
+                        <button class="btn btn-primary"><i class="fa fa-filter"></i> Lọc</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-sm-12">
+                <div class="wrapper">
+                    <table id="example" class="table table-striped tablefix">
+                        <thead class="thead-tablefix">
+                        <tr>
+                            <th>ID</th>
+                            <th>Ảnh</th>
+                            <th>Mã</th>
+                            <th>Danh mục</th>
+                            <th>Tên</th>
+                            <th>Giá</th>
+                            <th>Ngày tạo</th>
+                            <th>Số lượng còn</th>
+                            <th>Số lượng bán</th>
+                            <th class="sticky-col">Hành động</th>
+                        </tr>
+                        </thead>
+                        <tbody id="listproduct">
+                        <tr th:each="c : ${listProduct}">
+                            <td th:text="${c.id}"></td>
+                            <td><img th:src="${c.imageBanner}" th:class="imgtable"></td>
+                            <td th:text="${c.code}"></td>
+                            <td th:text="${c.category.name}"></td>
+                            <td th:text="${c.name}"></td>
+                            <td>[[${#numbers.formatDecimal(c.price, 0, 'COMMA', 0, 'POINT')}]].đ</td>
+                            <td th:text="${c.createdDate}"></td>
+                            <td th:text="${c.quantity}"></td>
+                            <td th:text="${c.quantitySold}"></td>
+                            <td class="sticky-col">
+                                <a th:href="@{/admin/delete-sanpham(id=${c.id})}" onclick="return confirm('Xác nhận xóa?');"><i class="fa fa-trash-alt iconaction"></i></a>
+                                <a th:href="@{/admin/updateproduct(id=${c.id})}"><i class="fa fa-edit iconaction"></i></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    $('#example').DataTable();
+</script>
+</body>
+</html>

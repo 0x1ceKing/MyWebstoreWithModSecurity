@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang chủ</title>
+    <head th:replace="common/libuser :: libheader"></head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" type="text/css" media="all" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" type="text/javascript"></script>
+</head>
+<body style="background-color: #f8f8f8;">
+<div th:replace="common/headerUser :: headerUser"></div>
+
+<div class="contentmain">
+    <div class="contentaccount">
+        <div class="row cartbds">
+            <div class="col-lg-3 col-md-3 col-sm-12 col-12 collistcart">
+                <div class="navleft">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-6 col-6">
+                            <div class="avaaccount">
+                                <img src="image/avatar.webp" class="avataracc">
+                                <p class="fullnamacc" id="fullnamacc" th:text="${userlogged.fullName}"></p>
+                                <button onclick="window.location.href='/logout'" class="btnlogoutacc">Đăng xuất</button>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-6 col-6 sinv">
+                            <div onclick="changeLink(this,'invoice')" class="tabdv activetabdv">
+                                <a data-toggle="tab" href="#invoice"><img class="imgau" src="image/invoice.svg"> Đơn hàng của tôi</a>
+                            </div>
+                            <div onclick="changeLink(this,'infor')" class="tabdv">
+                                <a data-toggle="tab" href="#infor"><img class="imgau" src="image/user.svg"> Tài khoản</a>
+                            </div>
+                            <div onclick="changeLink(this,'changepass')" class="tabdv">
+                                <a data-toggle="tab" href="#changepass"><img class="imgau" src="image/pass.svg"> Đổi mật khẩu</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 col-md-9 col-sm-12 col-12 collistcart">
+                <div class="navright">
+                    <div class="tab-content contentab">
+                        <div role="tabpanel" class="tab-pane active" id="invoice">
+                            <div class="headeraccount">
+                                <p class="fontyel">Đơn hàng của tôi</p>
+                                <span>(Nhấp vào mã đơn hàng để xem chi tiêt)</span>
+                                <div class="right_flex">
+                                    <span class="textrf" id="sldonhang">0 đơn hàng</span>
+                                </div>
+                            </div>
+                            <table class="table table-cart table-order" id="my-orders-table">
+                                <thead class="thead-default">
+                                <tr>
+                                    <th>Mã đơn hàng</th>
+                                    <th class="floatr">Ngày mua</th>
+                                    <th>Địa chỉ</th>
+                                    <th class="floatr">Giá trị<br>đơn hàng</th>
+                                    <th>Trạng thái thanh toán</th>
+                                    <th class="floatr">Trạng thái vận chuyển</th>
+                                    <th>Hủy</th>
+                                </tr>
+                                </thead>
+                                <tbody id="listinvoice">
+                                    <tr th:each="d : ${donHangList}">
+                                        <td><a data-bs-toggle="modal" th:data-bs-target="'#modaldeail'+${d.id}" class="yls pointer-event" th:text="${d.id}"></a></td>
+                                        <td class="floatr" th:text="${d.createdTime} +','+ ${d.createdDate}">11:37 21/09/2023</td>
+                                        <td th:text="${d.address}"></td>
+                                        <td class="floatr"><span class="yls">[[${#numbers.formatDecimal(d.totalAmount, 0, 'COMMA', 0, 'POINT')}]].đ</span></td>
+                                        <td><span class="span_pending" th:text="${d.payType.name() != 'COD' ? 'Đã thanh toán' : (d.status.name == 'Đã nhận' ? 'Đã thanh toán' : 'Chưa thanh toán')}"></span></td>
+                                        <td class="floatr"><span class="span_" th:text="${d.status.name}"></span></td>
+                                        <td th:if="${d.payType.name() == 'COD'} and (${d.status.id == 1} or ${d.status.id == 2}) ">
+                                            <form method="post" action="/cancel-invoice">
+                                                <input type="hidden" name="id" th:value="${d.id}">
+                                                <i onclick="submitForm(this)" class="fa fa-trash-o huydon"></i>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <div class="modal fade" th:id="'modaldeail'+${d.id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-lg modal-fullscreen-sm-down modeladdres">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">Chi tiết đơn hàng</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="row shipinfor">
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                                                                    <span class="ttshipinfor">Địa chỉ giao hàng</span>
+                                                                    <div class="blockinfor">
+                                                                        <p class="tennguoinhan" id="tennguoinhan">HIẾU TRẦN</p>
+                                                                        <span>Địa chỉ: <span th:text="${d.address}"></span></span>
+                                                                        <br><span class="phoneacc">Số điện thoại: <span th:text="${d.phone}"></span></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-lg-3 col-md-3 col-sm-12 col-12">
+                                                                    <span class="ttshipinfor">Thanh toán</span>
+                                                                    <div class="blockinfor">
+                                                                        <span id="loaithanhtoan" th:text="${d.payType}">Thanh toán khi nhận hàng (COD)</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-lg-3 col-md-3 col-sm-12 col-12">
+                                                                    <span class="ttshipinfor">Ghi chú</span>
+                                                                    <div class="blockinfor">
+                                                                        <span id="ghichunh" th:text="${d.note}">Không có ghi chú</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div><br><br>
+                                                            <table class="table table-cart table-order" id="detailInvoice">
+                                                                <thead class="thead-default theaddetail">
+                                                                <tr>
+                                                                    <th>Sản phẩm</th>
+                                                                    <th></th>
+                                                                    <th>Đơn giá</th>
+                                                                    <th>Số lượng</th>
+                                                                    <th>Tổng</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody id="listDetailinvoice">
+                                                                <tr th:each="detail : ${d.invoiceDetails}">
+                                                                    <td><img th:src="${detail.product.imageBanner}" class="imgdetailacc"></td>
+                                                                    <td>
+                                                                        <a target="_blank" th:href="@{detail(id=${detail.product.id})}" class="text-decoration-none" th:text="${detail.product.name}"></a><br>
+                                                                        <span>Mã sản phẩm: <span th:text="${detail.product.code}"></span></span><br>
+                                                                    </td>
+                                                                    <td>[[${#numbers.formatDecimal(detail.price, 0, 'COMMA', 0, 'POINT')}]].đ</td>
+                                                                    <td class="sldetailacc" th:text="${detail.quantity}"></td>
+                                                                    <td class="pricedetailacc yls">[[${#numbers.formatDecimal(detail.price * detail.quantity, 0, 'COMMA', 0, 'POINT')}]].đ</td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table><br><br><br><br>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="infor">
+                            <div class="headeraccount">
+                                <span class="fontyel">Thay đổi thông tin tài khoản</span><span class="smyl"></span>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 passacc">
+                                <form action="/update-infor" method="post">
+                                    <label class="lbacc">Họ tên</label>
+                                    <input th:value="${userlogged.fullName}" name="fullName" class="form-control">
+                                    <label class="lbacc">Số điện thoại</label>
+                                    <input th:value="${userlogged.phone}" name="phone" class="form-control">
+                                    <label class="lbacc">Địa chỉ</label>
+                                    <input th:value="${userlogged.address}" name="address" class="form-control">
+                                    <br><button type="button" class="btnhuylogin" onclick="window.location.href='accounts'">HỦY</button>
+                                    <button type="submit" class="btntt">LƯU</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="changepass">
+                            <div class="headeraccount">
+                                <span class="fontyel">Đổi mật khẩu</span><span class="smyl"> (Để bảo mật tài khoản, vui lòng không chia sẻ mật khẩu cho người khác)</span>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 passacc">
+                                <form onsubmit="return checkRepass()" action="update-password", method="post">
+                                    <label class="lbacc">Mật khẩu hiện tại *</label>
+                                    <input name="oldpass" type="password" class="form-control">
+                                    <label class="lbacc">Mật khẩu mới *</label>
+                                    <input name="newpass" th:id="newpass" type="password" class="form-control">
+                                    <label class="lbacc">Xác nhận mật khẩu mới *</label>
+                                    <input name="renewpass" th:id="renewpass" type="password" class="form-control">
+                                    <br><button type="button" class="btnhuylogin" onclick="window.location.href='accounts'">HỦY</button>
+                                    <button type="submit" class="btntt">LƯU</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function checkRepass(){
+        var newPass = document.getElementById("newpass").value
+        var renewpass = document.getElementById("renewpass").value
+        if(newPass != renewpass){
+            toastr.error("Mật khẩu không trùng khớp");
+            return false;
+        }
+        return true;
+    }
+    function submitForm(iconElement) {
+        var con = confirm("Xác nhận hủy đơn hàng");
+        if(con == false){
+            return;
+        }
+        var form = iconElement.closest('form');
+        form.submit();
+    }
+</script>
+</script>
+
+<div th:replace="common/footeruser :: footerUser"></div>
+</div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js" integrity="sha512-bPs7Ae6pVvhOSiIcyUClR7/q2OAsRiovw4vAkX+zJbw3ShAeeqezq50RIIcIURq7Oa20rW2n2q+fyXBNcU9lrw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="js/carousel.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script>
+    function changeLink(e, link) {
+        var tabs = document.getElementsByClassName("tabdv");
+        for (i = 0; i < tabs.length; i++) {
+            document.getElementsByClassName("tabdv")[i].classList.remove("activetabdv");
+        }
+        e.classList.add('activetabdv')
+
+        var tabb = document.getElementsByClassName("tab-pane");
+        for (i = 0; i < tabb.length; i++) {
+            document.getElementsByClassName("tab-pane")[i].classList.remove("active");
+        }
+        document.getElementById(link).classList.add('active')
+    }
+
+    var hash = location.hash.substr(1);
+    if (hash != "") {
+        var tabb = document.getElementsByClassName("tab-pane");
+        for (i = 0; i < tabb.length; i++) {
+            document.getElementsByClassName("tab-pane")[i].classList.remove("active");
+        }
+        var tabs = document.getElementsByClassName("tabdv");
+        for (i = 0; i < tabs.length; i++) {
+            document.getElementsByClassName("tabdv")[i].classList.remove("activetabdv");
+        }
+        document.getElementById(hash).classList.add('active')
+    }
+</script>
+</html>

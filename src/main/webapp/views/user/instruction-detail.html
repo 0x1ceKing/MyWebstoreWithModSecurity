@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang chủ</title>
+    <head th:replace="common/libuser :: libheader"></head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <script src="js/price.js"></script>
+</head>
+<body>
+<div th:replace="common/headerUser :: headerUser"></div>
+
+    <div class="contentmain">
+        <div class="container">
+            <div class="marque">
+                <marquee>Chuyên cung cấp hoa quả sạch, chất lượng cao, nguồn gốc rõ ràng</marquee>
+            </div>
+            <div class="row">
+                <div th:replace="common/categoryleft :: danhMucLeft"></div>
+                <div class="col-lg-80p col-md-9 col-sm-9">
+                    <h5 id="titlebg">DỰ ĐOÁN GIÁ HOA LY TẾT NĂM 2019</h5>
+                    <div id="contentblg" th:utext="${blog.content}">
+                        
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+<div th:replace="common/footeruser :: footerUser"></div>
+</div>
+</body>
+
+</html>

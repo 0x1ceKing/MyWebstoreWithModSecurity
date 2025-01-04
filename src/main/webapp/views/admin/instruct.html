@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tài Khoản</title>
+    <head th:replace="common/libadmin :: libheaderadmin"></head>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+</head>
+
+<body class="sb-nav-fixed">
+<div th:replace="common/navbarAdmin :: headerAdmin"></div>
+<div id="layoutSidenav">
+    <div th:replace="common/navbarAdmin :: sidenavAdmin"></div>
+        <div id="layoutSidenav_content">
+            <main class="main">
+                <div class="col-sm-12 header-sp">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="addinstruct" class="btn btn-success"><i class="fa fa-plus"></i> Thêm bài viết</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="wrapper">
+                        <table id="example" class="table table-striped tablefix">
+                            <thead class="thead-tablefix">
+                                <tr>
+                                    <th>id bài viết</th>
+                                    <th>Ảnh bìa</th>
+                                    <th>ngày tạo</th>
+                                    <th>tiêu đề bài viết</th>
+                                    <th>mô tả</th>
+                                    <th class="sticky-col">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="listblog">
+                                <tr th:each="c : ${listInstruct}">
+                                    <td th:text="${c.id}"></td>
+                                    <td><img th:src="${c.imageBanner}" th:class="imgtable"></td>
+                                    <td th:text="${c.createdDate}"></td>
+                                    <td th:text="${c.title}"></td>
+                                    <td th:text="${c.description}"></td>
+                                    <td class="sticky-col">
+                                        <a th:href="@{deleteinstruct(id=${c.id})}" onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này?');"><i class="fa fa-trash iconaction" ></i></a>
+                                        <a th:href="@{addinstruct(id=${c.id})}"><i class="fa fa-edit iconaction" ></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+</body>
+<script>
+    $('#example').DataTable();
+</script>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Trang chủ</title>
+  <head th:replace="common/libuser :: libheader"></head>
+  <link rel="stylesheet" type="text/css" href="/css/style.css">
+  <script src="js/price.js"></script>
+</head>
+<body>
+<div th:replace="common/headerUser :: headerUser"></div>
+
+<div class="contentmain">
+  <div class="container">
+    <div class="marque">
+      <marquee>Chuyên cung cấp hoa quả sạch, chất lượng cao, nguồn gốc rõ ràng</marquee>
+    </div>
+    <div class="row">
+      <div th:replace="common/categoryleft :: danhMucLeft"></div>
+      <div class="col-lg-80p col-md-9 col-sm-9">
+        <div class="blocktitle" style="margin-top: 0px;">Giỏ hàng</div>
+        <div class="listcart">
+          <span class="cartname">GIỎ HÀNG</span>
+          <span class="slcarts">(<span id="slcart">0</span>) Sản phẩm</span>
+
+          <div class="cartres">
+            <table class="table tablecart">
+              <tr>
+                <th>Sản phẩm</th>
+                <th>Đơn giá</th>
+                <th style="text-align: center;">Số lượng</th>
+                <th style="width: 100px;">Tổng tiền</th>
+              </tr>
+              <tbody id="listcartDes">
+                <tr th:each="c : ${gioHangList}">
+                    <td>
+                        <a th:href="@{detail(id=${c.product.id})}"><img class="imgprocart" th:src="${c.product.imageBanner}"></a>
+                        <div class="divnamecart">
+                            <a th:href="@{detail(id=${c.product.id})}" class="nameprocart" th:text="${c.product.name}">BƯỞI HƯƠNG THÁI LAN</a>
+                        </div>
+                    </td>
+                    <td><p class="boldcart">[[${#numbers.formatDecimal(c.product.price, 0, 'COMMA', 0, 'POINT')}]].đ</p></td>
+                    <td>
+                        <div class="clusinp">
+                          <form action="/update-sl" method="post">
+                            <input type="hidden" name="soLuong" th:value="-1">
+                            <input type="hidden" name="id" th:value="${c.id}">
+                            <button class="cartbtn"> - </button>
+                          </form>
+                          <input class="inputslcart" th:value="${c.quantity}">
+                          <form action="/update-sl" method="post">
+                            <input type="hidden" name="soLuong" th:value="1">
+                            <input type="hidden" name="id" th:value="${c.id}">
+                            <button class="cartbtn"> + </button>
+                          </form>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="tdpricecart">
+                            <p class="boldcart">[[${#numbers.formatDecimal(c.product.price*c.quantity, 0, 'COMMA', 0, 'POINT')}]].đ</p>
+                            <a th:href="@{delete-giohang(id=${c.id})}" class="delcart"><i class="fa fa-trash-o facartde"></i></a>
+                        </div>
+                    </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="ttcart">
+          <div class="tongdon">
+            <span class="tds">Tổng đơn: </span><span class="tonggiatien">[[${#numbers.formatDecimal(tongTien, 0, 'COMMA', 0, 'POINT')}]].đ</span>
+
+            <button onclick="location.href='checkout'" class="btnthanhtoan">Thanh toán</button>
+          </div>
+          <p class="freeship">MIỄN PHÍ VẬN CHUYỂN VỚI ĐƠN HÀNG TỪ 498K</p>
+          <p>Mọi đơn hàng trên hệ thống sẽ được giảm giá phí vận chuyển chỉ còn <span class="buypl">30.000 VND</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div th:replace="common/footeruser :: footerUser"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tài Khoản</title>
+    <head th:replace="common/libadmin :: libheaderadmin"></head>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+</head>
+
+<body class="sb-nav-fixed">
+<div th:replace="common/navbarAdmin :: headerAdmin"></div>
+<div id="layoutSidenav">
+    <div th:replace="common/navbarAdmin :: sidenavAdmin"></div>
+        <div id="layoutSidenav_content">
+            <main class="main">
+                <div class="col-sm-12 header-sp">
+                    <form class="row filterdonhang">
+                        <div class="col-md-2">
+                            <label>Từ ngày</label>
+                            <input th:value="${param.from}" name="from" type="date" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <label>Đến ngày</label>
+                            <input th:value="${param.to}" name="to" type="date" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label>Loại thanh toán</label>
+                            <select  name="pay" class="form-control">
+                                <option value="">--- Tất cả ---</option>
+                                <option th:selected="${param.pay!=null?param.pay[0]=='PAYMENT_ONLINE':false}" value="PAYMENT_ONLINE">Thanh toán bằng momo</option>
+                                <option th:selected="${param.pay!=null?param.pay[0]=='COD':false}" value="COD">Thanh toán khi nhận hàng</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Trạng thái đơn hàng</label>
+                            <select class="form-control" name="statusId">
+                                <option value="-1">--- Tất cả ---</option>
+                                <option
+                                        th:each="c : ${listStatus}"
+                                        th:text="${c.name}"
+                                        th:selected="${statusId == c.id}"
+                                        th:value="${c.id}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <br>
+                            <button onclick="loadInvoice()" class="btn btn-danger form-control"><i class="fa fa-filter"></i> Lọc</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-sm-12">
+                    <div class="wrapper">
+                        <table id="example" class="table table-striped tablefix">
+                            <thead class="thead-tablefix">
+                                <tr>
+                                    <th>Mã đơn hàng</th>
+                                    <th>Tên khách hàng</th>
+                                    <th class="floatr">Ngày đặt</th>
+                                    <th class="floatr">Địa chỉ</th>
+                                    <th class="floatr">Giá trị<br>đơn hàng</th>
+                                    <th>Trạng thái thanh toán</th>
+                                    <th class="floatr">Trạng thái vận chuyển</th>
+                                    <th class="sticky-col">Hành động</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="listinvoice">
+                                <tr th:each="c : ${listInvoice}">
+                                    <td th:text="${c.id}"></td>
+                                    <td th:text="${c.receiverName}"></td>
+                                    <td th:text="${c.createdTime} +', '+ ${c.createdDate}"></td>
+                                    <td th:text="${c.address}"></td>
+                                    <td>[[${#numbers.formatDecimal(c.totalAmount, 0, 'COMMA', 0, 'POINT')}]].đ</td>
+                                    <td th:if="${c.payType.name() != 'COD'}">Đã thanh toán</td>
+                                    <td th:if="${c.payType.name() == 'COD' && c.status.name == 'Đã nhận' }">Đã thanh toán</td>
+                                    <td th:if="${c.payType.name() == 'COD' && c.status.name != 'Đã nhận' }">Chưa thanh toán</td>
+
+                                    <td th:text="${c.status.name}"></td>
+                                    <td class="sticky-col">
+                                        <i data-bs-toggle="modal" th:data-bs-target="'#modaldeail'+${c.id}" class="fa fa-eye iconaction"></i>
+                                        <i th:attr="onclick=|openEditModal('${c.id}', '${c.status.id}')|" data-bs-toggle="modal" data-bs-target="#capnhatdonhang" class="fa fa-edit iconaction"></i><br>
+                                    </td>
+                                    <td>
+                                        <div class="modal fade" th:id="'modaldeail'+${c.id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg modal-fullscreen-sm-down modeladdres">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" >Chi tiết đơn hàng</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row shipinfor">
+                                                            <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                                                                <span class="ttshipinfor">Địa chỉ giao hàng</span>
+                                                                <div class="blockinfor">
+                                                                    <p class="tennguoinhan" id="tennguoinhan">HIẾU TRẦN</p>
+                                                                    <span>Địa chỉ: <span th:text="${c.address}"></span></span>
+                                                                    <br><span class="phoneacc">Số điện thoại: <span th:text="${c.phone}"></span></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-3 col-md-3 col-sm-12 col-12">
+                                                                <span class="ttshipinfor">Thanh toán</span>
+                                                                <div class="blockinfor">
+                                                                    <span id="loaithanhtoan" th:text="${c.payType}">Thanh toán khi nhận hàng (COD)</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-3 col-md-3 col-sm-12 col-12">
+                                                                <span class="ttshipinfor">Ghi chú</span>
+                                                                <div class="blockinfor">
+                                                                    <span id="ghichunh" th:text="${c.note}">Không có ghi chú</span>
+                                                                </div>
+                                                            </div>
+                                                        </div><br><br>
+                                                        <table class="table table-cart table-order" id="detailInvoice">
+                                                            <thead class="thead-default theaddetail">
+                                                            <tr>
+                                                                <th>Sản phẩm</th>
+                                                                <th></th>
+                                                                <th>Đơn giá</th>
+                                                                <th>Số lượng</th>
+                                                                <th>Tổng</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody id="listDetailinvoice">
+                                                            <tr th:each="detail : ${c.invoiceDetails}">
+                                                                <td><img th:src="${detail.product.imageBanner}" class="imgdetailacc"></td>
+                                                                <td>
+                                                                    <a target="_blank" th:href="@{detail(id=${detail.product.id})}" class="text-decoration-none" th:text="${detail.product.name}"></a><br>
+                                                                    <span>Mã sản phẩm: <span th:text="${detail.product.code}"></span></span><br>
+                                                                </td>
+                                                                <td>[[${#numbers.formatDecimal(detail.price, 0, 'COMMA', 0, 'POINT')}]].đ</td>
+                                                                <td class="sldetailacc" th:text="${detail.quantity}"></td>
+                                                                <td class="pricedetailacc yls">[[${#numbers.formatDecimal(detail.price * detail.quantity, 0, 'COMMA', 0, 'POINT')}]].đ</td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table><br><br><br><br>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+</body>
+<script>
+    function openEditModal(id, idstatus) {
+        document.getElementById('iddonhangupdate').value = id;
+        document.getElementById('trangthaiupdate').value = idstatus;
+    }
+</script>
+<div class="modal fade" id="capnhatdonhang" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Cập nhật trạng thái đơn hàng</h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+            <div class="modal-body">
+                <form method="post" action="update-status-invoice">
+                    <input name="invoiceId" type="hidden" id="iddonhangupdate">
+                    <select name="statusId" class="form-control" id="trangthaiupdate">
+                        <option th:each="c : ${listStatus}" th:text="${c.name}" th:value="${c.id}"></option>
+                    </select><br><br>
+                    <button class="btn btn-primary form-control action-btn">Cập nhật</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#example').DataTable();
+</script>
+</html>

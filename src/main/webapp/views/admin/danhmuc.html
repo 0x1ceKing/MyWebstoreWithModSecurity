@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh Mục</title>
+    <head th:replace="common/libadmin :: libheaderadmin"></head>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <style>
+        /* Button Styling */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        /* Styling for Select Dropdown */
+        .form-control {
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+
+        /* Form layout adjustments */
+        .form-inline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        /* Spacing adjustments */
+        .header-sp {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body class="sb-nav-fixed">
+<div th:replace="common/navbarAdmin :: headerAdmin"></div>
+<div id="layoutSidenav">
+    <div th:replace="common/navbarAdmin :: sidenavAdmin"></div>
+    <div id="layoutSidenav_content">
+        <main class="main">
+            <div class="col-sm-12 header-sp">
+                <div class="row">
+                    <div class="col-md-3">
+                        <a data-bs-toggle="modal" data-bs-target="#themdanhmuc" class="btn btn-success"><i class="fa fa-plus"></i> Thêm danh mục</a>
+                    </div>
+                    <div class="col-md-9 text-right">
+                        <!-- Form tìm kiếm -->
+                        <form action="/admin/searchByCategory" method="get" class="form-inline">
+                            <label for="categoryId">Tìm kiếm sản phẩm theo danh mục:</label>
+                            <select name="categoryId" id="categoryId" class="form-control mx-2">
+                                <option value="">Chọn danh mục</option>
+                                <option th:each="c : ${listcate}"
+                                        th:value="${c.id}"
+                                        th:text="${c.name}"
+                                        th:selected="${selectedCategory != null and selectedCategory == c.id}">
+                                </option>
+                            </select>
+                            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="wrapper">
+                    <table id="example" class="table table-striped tablefix">
+                        <thead class="thead-tablefix">
+                        <tr>
+                            <th>id</th>
+                            <th>Tên danh mục</th>
+                            <th class="sticky-col">Hành động</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody id="listcategory">
+                        <tr th:each="c : ${listcate}">
+                            <td th:text="${c.id}"></td>
+                            <td th:text="${c.name}"></td>
+                            <td>
+                                <a th:href="@{deletecategory(id=${c.id})}" onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');"><i class="fa fa-trash iconaction"></i></a>
+                                <a data-bs-toggle="modal" th:data-bs-target="'#updatedanhmuc'+${c.id}"><i class="fa fa-edit iconaction"></i></a>
+                            </td>
+                            <td>
+                                <div class="modal fade" th:id="'updatedanhmuc'+${c.id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header"><h5 class="modal-title">Cập nhật danh mục</h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                                            <div class="modal-body">
+                                                <form method="post" action="updatecategory" class="col-sm-5" style="margin: auto;">
+                                                    <label>Tên danh mục</label>
+                                                    <input name="id" type="hidden" th:value="${c.id}"><br><br>
+                                                    <input name="name" th:value="${c.name}" type="text" class="form-control"><br><br>
+                                                    <button class="btn btn-success form-control action-btn">Cập nhật</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Hiển thị danh sách sản phẩm nếu có -->
+            <div class="col-sm-12 mt-4">
+                <h3>Sản phẩm trong danh mục:</h3>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Danh mục</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="p : ${products}">
+                        <td th:text="${p.id}"></td>
+                        <td th:text="${p.name}"></td>
+                        <td th:text="${p.category.name}"></td>
+                    </tr>
+                    <tr th:if="${products == null || products.isEmpty()}">
+                        <td colspan="3" class="text-center">Không có sản phẩm nào.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Modal thêm danh mục -->
+<div class="modal fade" id="themdanhmuc" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title" id="exampleModalLabel">Thêm danh mục</h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+            <div class="modal-body">
+                <form method="post" action="addcategory" class="col-sm-5" style="margin: auto;">
+                    <label>Tên danh mục</label>
+                    <input name="name" type="text" class="form-control"><br><br>
+                    <button class="btn btn-success form-control action-btn">Thêm danh mục</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    $('#example').DataTable();
+</script>
+</html>

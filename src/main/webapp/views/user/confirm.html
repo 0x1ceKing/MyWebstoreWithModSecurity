@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Xác Nhận</title>
+    <head th:replace="common/libuser :: libheader"></head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+<div class="contentmain">
+    <div class="contentlogin" style="background-image: url(image/back.jpg);background-repeat: no-repeat;background-size: 100%;display: flex; ">
+        <div class="loginform col-lg-7 col-md-7 col-sm-12 col-12">
+            <p class="plogintl"><span class="dangtl">XÁC NHẬN </span><span class="kytl"> TÀI KHOẢN</span></p>
+            <p class="noteregis">Chúng tôi đã gửi mã xác thực 6 số cho bạn, hãy nhập mã xác thực để kích hoạt tài khoản</p>
+            <form class="inputloginform" method="post" action="/confirm" th:object="${user}">
+                <input name="email" th:value="${param.email}" type="hidden">
+                <input name="key" placeholder="Nhập mã xác thực" class="inputform">
+                <button type="button" class="btnhuylogin" onclick="window.location.href='login'">HỦY</button>
+                <button type="submit" class="btntt">Xác thực</button>
+                <p class="quenmk"><a href="index">
+                    ← Quay lại trang chủ – Caygiongnongnghiep
+                </a></p>
+            </form>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        var error = /*[[${error}]]*/ 'default';
+        if(error != null){
+            toastr.error(error);
+        }
+    </script>
+</div>
+</body>
+</html>

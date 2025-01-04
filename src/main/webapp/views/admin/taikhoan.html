@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tài Khoản</title>
+    <head th:replace="common/libadmin :: libheaderadmin"></head>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+</head>
+
+<body class="sb-nav-fixed">
+<div th:replace="common/navbarAdmin :: headerAdmin"></div>
+<div id="layoutSidenav">
+    <div th:replace="common/navbarAdmin :: sidenavAdmin"></div>
+        <div id="layoutSidenav_content">
+            <main class="main">
+                <div class="col-sm-12 header-sp">
+                    <form class="row">
+                        <div class="col-md-3 col-sm-6 col-6">
+                            <!-- <label class="lb-form" >Chọn quyền</label>
+                            <select name="role" id="role" class="form-control">
+                                <option value="">Tất cả quyền</option>
+                                <option value="ROLE_USER" th:selected="${param.role != null and param.role[0] == 'ROLE_USER'}">Tài khoản người dùng</option>
+                                <option value="ROLE_ADMIN" th:selected="${param.role != null and param.role[0] == 'ROLE_ADMIN'}">Tài khoản admin</option>
+                            </select>-->
+                            <label class="lb-form">Tìm kiếm</label>
+                            <input type="text" name="keyword" id="keyword" class="form-control"
+                                   placeholder="Nhập từ khóa để tìm kiếm"
+                                   th:value="${keyword}" />
+
+
+                        </div>
+                        <div class="col-md-2 col-sm-6 col-6">
+                            <label class="lb-form">&ThinSpace;</label>
+                            <button class="btn btn-primary form-control">Tìm kiếm</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-sm-12">
+                    <div class="wrapper">
+                        <table id="example" class="table table-striped tablefix">
+                            <thead class="thead-tablefix">
+                                <tr>
+                                    <th>id</th>
+                                    <th>Email</th>
+                                    <th>Họ tên</th>
+                                    <th>Địa chỉ</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Quyền</th>
+                                    <th class="sticky-col">Khóa</th>
+                                </tr>
+                            </thead>
+                            <tbody id="listuser">
+                                <tr th:each="u : ${taiKhoanList}">
+                                    <td th:text="${u.id}"></td>
+                                    <td th:text="${u.email}"></td>
+                                    <td th:text="${u.fullName}"></td>
+                                    <td th:text="${u.address}"></td>
+                                    <td th:text="${u.phone}"></td>
+                                    <td th:text="${u.createdDate}"></td>
+                                    <td th:text="${u.role}"></td>
+                                    <td>
+                                        <form method="post" action="lockOrUnlockUser">
+                                            <input type="hidden" name="id" th:value="${u.id}">
+                                            <button th:class="${u.actived == true?'btn btn-primary':'btn btn-danger'}"
+                                            th:text="${u.actived == true?'Khóa':'Mở khóa'}"></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="modal" id="addtk" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Thêm tài khoản quản trị</h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                <div class="modal-body row">
+                    <form action="javascript:addAdmin()" class="col-sm-6" style="margin: auto;">
+                        <label class="lb-form">Họ tên</label>
+                        <input id="fullname" class="form-control">
+                        <label class="lb-form">Số điện thoại</label>
+                        <input id="phone" class="form-control">
+                        <label class="lb-form">Email</label>
+                        <input required id="email" class="form-control">
+                        <label class="lb-form">Mật khẩu</label>
+                        <input required id="pass" type="password" class="form-control">
+                        <label class="lb-form">Nhắc lại mật khẩu</label>
+                        <input required id="repass" type="password" class="form-control">
+                        <br>
+                        <button class="form-control btn btn-primary">Thêm tài khoản</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    $('#example').DataTable();
+</script>
+</html>

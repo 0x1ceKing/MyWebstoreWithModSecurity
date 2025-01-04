@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang chủ</title>
+    <head th:replace="common/libuser :: libheader"></head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <script src="js/price.js"></script>
+</head>
+<body>
+    <div th:replace="common/headerUser :: headerUser"></div>
+
+    <div class="contentmain">
+        <div class="container">
+            <div class="marque">
+                <marquee>Chuyên cung cấp hoa quả sạch, chất lượng cao, nguồn gốc rõ ràng</marquee>
+            </div>
+            <div class="row">
+                <div th:replace="common/categoryleft :: danhMucLeft"></div>
+                <div class="col-lg-80p col-md-9 col-sm-9">
+                    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active"><img style="height: 300px;object-fit: cover" src="image/bn1.jpg" class="d-block w-100"></div>
+                            <div class="carousel-item"><img style="height: 300px;object-fit: cover" src="image/bn2.jpg" class="d-block w-100"></div>
+                            <div class="carousel-item"><img style="height: 300px;object-fit: cover" src="image/bn3.jpg" class="d-block w-100"></div>
+                            <div class="carousel-item"><img style="height: 300px;object-fit: cover" src="image/bn4.jpg" class="d-block w-100"></div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                    <div class="blocktitle">Tất cả sản phẩm</div>
+                    <div class="row">
+                        <div class="col-lg-20p col-md-4 col-sm-3 col-6 singleproduct" th:each="sanPham : ${sanPhamList}">
+                            <div class="zoom-img"><a th:href="@{detail(id=${sanPham.id})}" ><img class="imgproduct" th:src="${sanPham.imageBanner}"></a></div>
+                            <a class="proname" th:href="@{detail(id=${sanPham.id})}"  th:text="${sanPham.name}">></a>
+                            <span class="pricepro" >Giá: <span>[[${#numbers.formatDecimal(sanPham.price, 0, 'COMMA', 0, 'POINT')}]].đ</span></span>
+                            <form sec:authorize="isAuthenticated()" action="add-cart" method="post">
+                                <input type="hidden" name="id" th:value="${sanPham.id}">
+                                <input type="hidden" name="soLuong" th:value="${1}">
+                                <button class="btncartpro form-control"><i class="fa fa-shopping-bag"></i> Giỏ hàng</button>
+                            </form>
+                        </div>
+                    </div>
+                    <nav aria-label="Page navigation" class="navigationpage">
+                        <ul class="pagination justify-content-center">
+                            <!-- Nút Previous -->
+                            <li class="page-item" th:classappend="${pageable.pageNumber == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/index(page=${pageable.pageNumber - 1}, size=${pageable.pageSize})}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+
+                            <!-- Các trang -->
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, tongSoTrang - 1)}"
+                                th:classappend="${i == pageable.pageNumber} ? 'active'">
+                                <a class="page-link" th:href="@{/index(page=${i}, size=${pageable.pageSize})}" th:text="${i + 1}">1</a>
+                            </li>
+
+                            <!-- Nút Next -->
+                            <li class="page-item" th:classappend="${pageable.pageNumber >= tongSoTrang - 1} ? 'disabled'">
+                                <a class="page-link" th:href="@{/index(page=${pageable.pageNumber + 1}, size=${pageable.pageSize})}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <div class="blocktitle">Hướng dẫn chăm sóc cây trồng</div>
+                    <div class="row blofindex">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-12" id="instructmain">
+                            <div class="zoom-img"><a th:href="@{chitietblog(id=${lastBlog.id})}"><img class="imgproduct" th:src="${lastBlog.imageBanner}"></a></div>
+                            <a th:href="@{chitietblog(id=${lastBlog.id})}" class="blognamespe" th:text="${lastBlog.title}"></a>
+                            <span class="descriptionblog" th:text="${lastBlog.description}"></span>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="row" id="listinstructindex">
+                                <div class="row single-blogindex" th:each="blog : ${listBlog}">
+                                    <div class="col-3">
+                                        <div class="zoom-img"><a th:href="@{chitietblog(id=${blog.id})}"><img class="imgproduct" th:src="${blog.imageBanner}"></a></div>
+                                    </div>
+                                    <div class="col-9">
+                                        <a th:href="@{chitietblog(id=${blog.id})}" class="tille-single-blogindex" th:text="${blog.title}"></a>
+                                        <span class="desblogindex" th:text="${blog.description}"></span>
+                                    </div>
+                                    <div class="col-12"><hr></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="common/footeruser :: footerUser"></div>
+</div>
+</body>
+</html>

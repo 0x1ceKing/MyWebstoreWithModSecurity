@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tài Khoản</title>
+    <head th:replace="common/libadmin :: libheaderadmin"></head>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+</head>
+
+<body class="sb-nav-fixed">
+<div th:replace="common/navbarAdmin :: headerAdmin"></div>
+<div id="layoutSidenav">
+    <div th:replace="common/navbarAdmin :: sidenavAdmin"></div>
+        <div id="layoutSidenav_content">
+            <main class="main">
+                <div class="col-sm-5">
+                    <label class="lb-form">Tên danh mục</label>
+                    <input id="catename" type="text" class="form-control">
+                    <label class="checkbox-custom">Danh mục chính 
+                        <input id="primaryCate" type="checkbox">
+                        <span class="checkmark-checkbox"></span>
+                    </label><br>
+                    <label class="lb-form">Ảnh danh mục</label>
+                    <input id="fileimage" type="file" class="form-control">
+                    <img id="imgpreview" style="width: 120px; margin-top: 15px;margin-bottom: 15px;display: block;">
+                    <label class="lb-form">Danh mục cha</label>
+                    <select id="listdpar" class="form-control" style="z-index: 10000;">
+                        <option value=""></option>
+                    </select>
+                    <br><br>
+                    <button onclick="saveCategory()" class="btn btn-success form-control action-btn">Thêm/ Cập nhật danh mục</button>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+<script>
+    fileimage.onchange = evt => {
+        const [file] = fileimage.files
+        if (file) {
+            imgpreview.src = URL.createObjectURL(file)
+        }
+    }
+</script>
+
+</html>

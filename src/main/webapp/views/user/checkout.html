@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Trang chủ</title>
+  <head th:replace="common/libuser :: libheader"></head>
+  <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-8 col-sm-12 col-12 checkoutdiv" id="checkleft">
+      <div class="d-flex flex-column align-items-center divimglogocheck divafter">
+        <!--                    <img class="imgcheckout" src="image/logo.png">-->
+      </div>
+
+      <div class="inforship">
+        <div class="row">
+          <form id="formpayment" action="/checkout" method="post" class="col-lg-6 col-md-6 col-sm-12 col-12">
+            <br><span class="titlecheckout">Thông tin giao hàng</span>
+            <br><label class="fomd">Họ tên người nhận</label>
+            <input th:value="${userlogged.fullName}" name="fullname" class="form-control" placeholder="Họ tên">
+            <label class="fomd">Số điện thoại người nhận</label>
+            <input th:value="${userlogged.phone}" name="phone" class="form-control" placeholder="Số điện thoại">
+
+            <!-- Trường địa chỉ với thông báo lỗi nếu có -->
+            <label class="fomd">Địa chỉ người nhận</label>
+            <input th:value="${userlogged.address}" name="address" class="form-control" placeholder="Địa chỉ nhận hàng của bạn">
+            <!-- Hiển thị lỗi nếu có -->
+            <div th:if="${error != null}" class="text-danger" th:text="${error}"></div>
+
+            <textarea name="note" class="form-control fomd" placeholder="ghi chú"></textarea>
+          </form>
+
+          <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+            <br><span class="titlecheckout">Vận chuyển</span>
+            <div class="feevc">
+              <label for="checkvc">Phí vận chuyển</label>
+              <span class="tows">0đ</span>
+            </div>
+            <br><span class="titlecheckout">Thanh toán</span>
+            <table class="table tablepay">
+              <tr onclick="momo.click()">
+                <td><label class="radiocustom">	Thanh toán qua Ví MoMo
+                  <input form="formpayment" value="momo" id="momo" type="radio" name="paytype" checked="checked">
+                  <span class="checkmark"></span></label></td>
+                <td><img src="image/momo.webp" class="momopay"></td>
+              </tr>
+
+              <tr onclick="code.click()">
+                <td><label class="radiocustom">	Thanh toán khi nhận hàng (COD)
+                  <input form="formpayment" value="cod" id="code" type="radio" name="paytype">
+                  <span class="checkmark"></span></label></td>
+                <td><i class="fa fa-money paycode"></i></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="notecheckout">
+        <hr>
+        <span>Sau khi hoàn tất đơn hàng khoảng 60-90 phút (trong giờ hành chính), Chúng tôi sẽ nhanh chóng gọi điện xác nhận lại thời gian giao hàng với bạn. Chúng tôi xin cảm ơn!</span>
+      </div>
+    </div>
+
+    <div class="col-lg-4 col-md-4 col-sm-12 col-12" id="checkright">
+      <div class="infordoncheck">
+        <span class="dhcheck">Đơn hàng (<span id="slcartcheckout" th:text="${gioHangList.size()}"></span> sản phẩm)</span>
+        <div id="listproductcheck">
+          <div class="row singleck" th:each="c : ${gioHangList}">
+            <div class="col-lg-2 col-md-3 col-sm-3 col-3 colimgcheck">
+              <img th:src="${c.product.imageBanner}" class="procheckout">
+              <span class="slpro" th:text="${c.quantity}"></span>
+            </div>
+            <div class="col-lg-7 col-md-6 col-sm-6 col-6">
+              <span class="namecheck" th:text="${c.product.name}"></span>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-3 pricecheck">
+              <span>[[${#numbers.formatDecimal(c.product.price*c.quantity, 0, 'COMMA', 0, 'POINT')}]].đ</span>
+            </div>
+          </div>
+        </div>
+        <div class="magg">
+          <table class="table">
+            <tr>
+              <td>Tạm tính</td>
+              <td class="colright" id="totalAmount">[[${#numbers.formatDecimal(tongTien, 0, 'COMMA', 0, 'POINT')}]].đ</td>
+            </tr>
+            <tr>
+              <td>Phí vận chuyển</td>
+              <td class="colright">Miễn phí</td>
+            </tr>
+            <tr>
+              <td>Giảm giá</td>
+              <td class="colright" id="moneyDiscount">0đ</td>
+            </tr>
+            <tr>
+              <td>Tổng cộng</td>
+              <td class="colright ylsbold" id="totalfi">[[${#numbers.formatDecimal(tongTien, 0, 'COMMA', 0, 'POINT')}]].đ</td>
+            </tr>
+          </table>
+          <button form="formpayment" class="btndathang">Đặt hàng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script th:inline="javascript">
+    var message = /*[[${message}]]*/ 'default';
+    if(message != null){
+        toastr.success(message);
+    }
+    var error = /*[[${error}]]*/ 'default';
+    if(error != null){
+        toastr.error(error);
+    }
+    var warning = /*[[${warning}]]*/ 'default';
+    if(warning != null){
+        toastr.warning(warning);
+    }
+  </script>
+</div>
+</body>
+</html>
