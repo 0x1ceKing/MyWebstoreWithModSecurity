@@ -9,7 +9,7 @@ This platform is designed for the efficient and secure sale of agricultural prod
 * [ModSecurity FireWall](https://modsecurity.org/)
 
 ### Networking Diagram
-![Banner](https://raw.githubusercontent.com/0x1ceKing/MyWebstoreWithModSecurity/main/diagram.svg "Banner Image")
+<img src="https://raw.githubusercontent.com/0x1ceKing/MyWebstoreWithModSecurity/main/diagram.svg">
 ### Run Docker Command
 ```
 docker—compose —f ./docker-compose.yml up —d
